@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Web字体 + CSS -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/v4-shims.css">
+
+
+  <!-- SVG + JS框架 -->
+
+  <title>音乐播放器</title>
+
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #333;
+    }
+
+    .nav {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      /* background-color: pink; */
+    }
+
+    .background_img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      background: url(./image/background.png) no-repeat center center;
+      background-size: cover;
+      z-index: -1;
+      /* float:left; */
+      filter: blur(3.5px);
+    }
+
+    .wrapper {
+      width: 800px;
+      height: 300px;
+      /* background-color: pink; */
+      margin: 100px auto;
+      position: relative;
+      z-index: 1;
+
+    }
+
+    .wrapper .content {
+      width: 600px;
+      height: 120px;
+      background-color: #fff;
+      position: absolute;
+      left: 100px;
+      top: 75px;
+      border-radius: 30px;
+    }
+
+    .wrapper .content .player {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      background-color: #fff;
+      left: 60px;
+      top: -75px;
+      animation-play-state: paused;
+      border-radius: 50%;
+    }
+
+    .wrapper .content .player.turn {
+      animation: rotate 6s linear infinite;
+      animation-play-state: running;
+    }
+
+    .wrapper .content .player .point {
+      width: 25px;
+      height: 25px;
+      /* background-color: #fff; */
+      z-index: 10;
+      position: absolute;
+      border-radius: 50%;
+      left: 60px;
+      top: 60px;
+      /* opacity: 0.75; */
+    }
+
+    .wrapper .content .player:hover {
+      animation-play-state: running;
+    }
+
+    .content .player img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      position: absolute;
+      left: 15px;
+      top: 15px;
+    }
+
+    .wrapper .content .control {
+      width: 200px;
+      height: 40px;
+      /* background-color: pink; */
+      position: absolute;
+      right: 160px;
+      top: 50px;
+    }
+
+    .control ul {
+      height: 100%;
+      display: flex;
+    }
+
+    .control ul li {
+      height: 40px;
+      /* background-color: pink; */
+      width: 40px;
+      text-align: center;
+      line-height: 40px;
+      color: #b2b0ae;
+      font-size: 24px;
+      margin-right: 20px;
+      transition: all 1.2s;
+    }
+
+    .control ul li i {
+      display: block;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      /* background-color: pink; */
+    }
+
+    .control ul li:hover {
+      background-color: rgba(94, 97, 99, 0.2);
+      color: #fff;
+      border-radius: 10px;
+    }
+
+    @keyframes rotate {
+      0% {
+        transform: rotate(0);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    li {
+      list-style: none;
+    }
+
+    .wrapper .content .background {
+      width: 500px;
+      height: 120px;
+      background-color: pink;
+      position: absolute;
+      left: 50px;
+      top: 0px;
+      transition: all 2s;
+      z-index: -3;
+      background-color: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(3.5px);
+      -webkit-backdrop-filter: blur(3.5px);
+      border: 0.666667px solid rgba(255, 255, 255, 0.18);
+      box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+      -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+      border-radius: 17px;
+      -webkit-border-radius: 17px;
+      color: rgba(255, 255, 255, 0.898);
+    }
+
+    .wrapper .content .background.moveTop {
+      top: -110px;
+    }
+
+    .wrapper .content .background .body {
+      width: 300px;
+      height: 110px;
+      /* background-color: pink; */
+      padding: 15px;
+      margin-left: 180px;
+    }
+
+    .background .body .f_header {
+      width: 100%;
+
+    }
+
+    .f_header h3 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .background .body .f_header h3,
+    h5 {
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .f_header h5 {
+      font-size: 14px;
+      color: #aea69d;
+    }
+
+    .f_time {
+      width: 100%;
+      display: flex;
+      margin-top: 4px;
+      justify-content: space-between;
+    }
+
+    .f_time span {
+      color: #d79c9e;
+      margin-bottom: 4px;
+    }
+
+    .body .f {
+      width: 100%;
+      height: 6px;
+      background-color: #dadada;
+      border-radius: 6px;
+    }
+
+    .body .f_process {
+      width: 0%;
+      height: 6px;
+      border-radius: 6px;
+      background-color: #d79c9e;
+    }
+
+    .nav .drawer {
+      width: 400px;
+      height: 100%;
+      padding: 16px;
+      /* background-color: rgba(164, 225, 74, 0.6); */
+      background: linear-gradient(45deg, rgba(122, 214, 115, 1), rgba(245, 195, 203, 1));
+      position: absolute;
+      right: 0;
+      top: 0;
+      opacity: 0;
+      transition: opacity .5s ease-in-out;
+      pointer-events: none;
+    }
+
+    .nav .drawer.show {
+      pointer-events: auto;
+      opacity: 1;
+
+    }
+
+    .drawer .d_content_list {
+      display: flex;
+      margin-bottom: 10px;
+      width: 100%;
+      height: 40px;
+      /* background-color: pink; */
+      justify-content: space-between;
+      align-items: center;
+
+    }
+
+    .drawer .d_content_list h3 {
+      font-size: 16px;
+      /* font-weight: 400; */
+      color: #606060;
+    }
+
+    .drawer .d_content_list i {
+      width: 16px;
+      height: 16px;
+      display: block;
+      text-align: center;
+      line-height: 16px;
+    }
+
+    .drawer .d_content_list i:hover {
+      animation: rotate1 1s infinite linear;
+    }
+
+    @keyframes rotate1 {
+      0% {
+        transform: rotate(0);
+      }
+
+      100% {
+        transform: rotate(180deg);
+      }
+    }
+
+    .drawer .d_content_content {
+      width: 100%;
+    }
+
+    .drawer .d_content_content ul {
+      width: 100%;
+    }
+
+    .drawer .d_content_content ul li {
+      width: 100%;
+      height: 40px;
+      /* background-color: pink; */
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      line-height: 30px;
+      transition: all .5s;
+      border-bottom: 2px solid #d5d5d5;
+    }
+    .drawer .d_content_content ul li i{
+      transition: all 1.2s;
+    }
+    .drawer .d_content_content ul li i:hover{
+      transform: scale(2);
+    }
+    .drawer .d_content_content ul li.active {
+      color: #00cc65;
+    }
+
+    .drawer .d_content_content ul li p {
+      width: 80%;
+      height: 40px;
+      /* background-color: red; */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .drawer .d_content_content ul li:hover {
+      color: #00cc65;
+    }
+
+    .drawer .d_content_content ul li i {
+      width: 40px;
+      height: 40px;
+      /* background-color: green; */
+      text-align: center;
+      line-height: 40px;
+    }
+
+    .d_error {
+      font-size: 20px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="nav">
+    <div class="background_img"> </div>
+    <div class="wrapper">
+      <div class="content">
+        <div class="background">
+          <div class="body">
+            <!-- <div class="f_header">
+              <h3>我记得</h3>
+              <h5><i>赵雷</i> - <span>署前街少年</span></h5>
+            </div>
+            <div class="f_time">
+              <span class="f_left">00:05</span>
+              <span class="f_right">05:29</span>
+            </div>
+            <div class="f">
+               <div class="f_process">
+
+            </div>
+            </div>
+            -->
+          </div>
+        </div>
+        <div class="player">
+          <img src="./image/avatar.png" alt="图片加载失败">
+          <div class="point"></div>
+        </div>
+        <div class="control">
+          <ul>
+            <li>
+              <i class="fas fa-step-backward i_left"></i>
+            </li>
+            <li>
+              <i class="fas fa-play i_play"></i>
+            </li>
+            <li>
+              <i class="fas fa-step-forward i_right"></i>
+            </li>
+            <li>
+              <i class="fas fa-list-ul i_list"></i>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="drawer">
+      <div class="d_content_list">
+        <h3>音乐列表</h3>
+        <i class="fas fa-times d_error"></i>
+      </div>
+      <div class="d_content_content">
+        <ul>
+          <!-- <li>
+            <p>01.<i>我记得</i>-<span>赵雷</span> </p>
+            <i class="fas fa-play-circle"></i>
+          </li>
+          <li>
+            <p>02.成都-赵雷</p>
+            <i class="fas fa-play-circle"></i>
+          </li>
+          <li>
+            <p>03.南方姑娘-赵雷</p>
+            <i class="fas fa-play-circle"></i>
+          </li>
+          <li>
+            <p>04.阴天快乐-陈奕迅</p>
+            <i class="fas fa-play-circle"></i>
+          </li>
+          <li>
+            <p>05.爱情转移-陈奕迅</p>
+            <i class="fas fa-play-circle"></i>
+          </li> -->
+        </ul>
+      </div>
+    </div>
+    <audio src="" id="audioPlay"></audio>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    let data = []
+    let currentIndex = 0
+    document.addEventListener('DOMContentLoaded', function () {
+      getList()
+    })
+    const prev = document.querySelector('.control .i_left')
+    const next = document.querySelector('.control .i_right')
+    const playerImg = document.querySelector('.player img')
+    const audioPlay = document.querySelector('#audioPlay')
+    const contentUl = document.querySelector('.d_content_content ul')
+    prev.addEventListener('click', async () => {
+        let lis= contentUl.children
+        lis[currentIndex].children[1].classList.remove('fa-pause-circle')
+        lis[currentIndex].children[1].classList.add('fa-play-circle')
+        lis[currentIndex].classList.remove('active')
+      currentIndex = currentIndex - 1
+      if (currentIndex < 0) {
+        currentIndex = data.length - 1
+      }
+      await setInnerHTML()
+      if (audioPlay.paused) {
+        tPlay()
+         let lis= contentUl.children
+        lis[currentIndex].children[1].classList.remove('fa-play-circle')
+        lis[currentIndex].children[1].classList.add('fa-pause-circle')
+        lis[currentIndex].classList.add('active')
+        player.classList.add('turn')
+        contentBackground.classList.add('moveTop')
+      } else {
+        tPause()
+         let lis= contentUl.children
+        lis[currentIndex].children[1].classList.remove('fa-pause-circle')
+        lis[currentIndex].children[1].classList.add('fa-play-circle')
+        lis[currentIndex].classList.remove('active')
+        player.classList.remove('turn')
+        contentBackground.classList.remove('moveTop')
+      }
+    })
+    next.addEventListener('click', async () => {
+       let lis= contentUl.children
+        lis[currentIndex].children[1].classList.remove('fa-pause-circle')
+        lis[currentIndex].children[1].classList.add('fa-play-circle')
+        lis[currentIndex].classList.remove('active')
+      currentIndex = currentIndex + 1
+      if (currentIndex > data.length - 1) {
+        currentIndex = 0
+      }
+      await setInnerHTML()
+      if (audioPlay.paused) {
+        tPlay()
+         let lis= contentUl.children
+        lis[currentIndex].children[1].classList.remove('fa-play-circle')
+        lis[currentIndex].children[1].classList.add('fa-pause-circle')
+        lis[currentIndex].classList.add('active')
+        player.classList.add('turn')
+        contentBackground.classList.add('moveTop')
+
+      } else {
+        tPause()
+            let lis= contentUl.children
+        lis[currentIndex].children[1].classList.remove('fa-pause-circle')
+        lis[currentIndex].children[1].classList.add('fa-play-circle')
+        lis[currentIndex].classList.remove('active')
+        player.classList.remove('turn')
+        contentBackground.classList.remove('moveTop')
+
+      }
+    })
+    const tPlay = function () {
+      audioPlay.play()
+      play.classList.remove('fa-play')
+      play.classList.add('fa-pause-circle')
+      // isPlay=!isPlay
+      isPlay = true
+    }
+    const tPause = function () {
+      audioPlay.pause()
+      play.classList.remove('fa-pause-circle')
+      play.classList.add('fa-play')
+      // isPlay=!isPlay
+      isPlay = false
+    }
+    const play = document.querySelector('.control  .i_play')
+    const contentBackground = document.querySelector('.wrapper .content .background')
+    const player = document.querySelector('.wrapper .content .player')
+    let isPlay = false
+    play.addEventListener('click', (e) => {
+      if (isPlay === false) {
+        tPlay()
+          /*准备做的*/
+          // console.log(currentIndex)
+        let lis= contentUl.children
+        lis[currentIndex].children[1].classList.remove('fa-play-circle')
+        lis[currentIndex].children[1].classList.add('fa-pause-circle')
+        lis[currentIndex].classList.add('active')
+        player.classList.toggle('turn')
+        contentBackground.classList.toggle('moveTop')
+        document.addEventListener('keydown', (e) => {
+          switch (e.key) {
+            case 'ArrowRight':
+              percent = percent + 0.8
+              // console.log(percent)
+              if (percent >= 100) {
+                percent = 0
+              }
+              fProcess.style.width = percent + '%'
+              audioPlay.currentTime = audioPlay.duration * percent / 100
+              break
+            case 'ArrowLeft':
+              percent = percent - 0.8
+              // console.log(percent)
+              if (percent <= 0) {
+                percent = 0
+              }
+              fProcess.style.width = percent + '%'
+              audioPlay.currentTime = audioPlay.duration * percent / 100
+              break
+            default: break
+          }
+        })
+
+      } else {
+        tPause()
+        let lis= contentUl.children
+        lis[currentIndex].children[1].classList.remove('fa-pause-circle')
+        lis[currentIndex].children[1].classList.add('fa-play-circle')
+        lis[currentIndex].classList.remove('active')
+        player.classList.toggle('turn')
+        contentBackground.classList.toggle('moveTop')
+      }
+    })
+    const list = document.querySelector('.control .i_list')
+
+    const backgroundImg = document.querySelector('.background_img')
+    const drawer = document.querySelector('.nav .drawer')
+    list.addEventListener('click', function (e) {
+      drawer.classList.toggle('show')
+      drawer.classList.contains('show') ? backgroundImg.style.filter = `blur(${35.5}px` : backgroundImg.style.filter = `blur(${3.5}px)`
+    })
+    const dError = document.querySelector('.d_error')
+    dError.addEventListener('click', function (e) {
+      drawer.classList.toggle('show')
+      drawer.classList.contains('show') ? backgroundImg.style.filter = `blur(${35.5}px` : backgroundImg.style.filter = `blur(${3.5}px)`
+    })
+    const fBody = document.querySelector('.wrapper .body')
+    async function getList() {
+      const result = await axios.get('./music.json')
+      data = result.data
+      await setInnerHTML()
+      setContent()
+    }
+    let fProcess = null
+    let fLeft = null
+    async function setInnerHTML() {
+      playerImg.src = data[currentIndex].cover
+      audioPlay.src = data[currentIndex].audio_url
+      fBody.innerHTML = `
+          <div class="f_header">
+              <h3>${data[currentIndex].name}</h3>
+              <h5><i>${data[currentIndex].singer}</i> - <span>${data[currentIndex].album}</span></h5>
+            </div>
+            <div class="f_time">
+              <span class="f_left">00:00</span>
+              <span class="f_right">${data[currentIndex].time}</span>
+            </div>
+           <div class="f">
+             <div class="f_process">
+
+            </div>
+            </div>
+       `
+      fProcess = document.querySelector('.f_process')
+      fLeft = document.querySelector('.f_time .f_left')
+      f = document.querySelector('.f')
+    }
+
+    function setContent() {
+      for (let i = 0; i < data.length; i++) {
+        let li = document.createElement('li')
+        li.innerHTML = `
+           <p>0${i + 1}.<i>${data[i].name}</i>-<span>${data[i].singer}</span> </p>
+            <i class="fas fa-play-circle fa-isPlay"></i>
+        `
+        contentUl.append(li)
+      }
+    }
+    let flag = false
+    contentUl.addEventListener('click', async function (e) {
+      let lis = contentUl.children
+      // console.log(lis)
+      for (let i = 0; i < lis.length; i++) {
+        if (lis[i].classList.contains('active')) {
+          lis[i].classList.remove('active')
+        }
+      }
+      if (e.target.closest('li')) {
+        // console.log(e.target.closest('li').children)
+        e.target.closest('li').classList.add('active')
+        for (let i = 0; i < lis.length; i++) {
+          if (lis[i].classList.contains('active')) {
+            lis[i].children[1].addEventListener('click', e => {
+              if (lis[i].children[1].classList.contains('fa-play-circle')) {
+                lis[i].children[1].classList.remove('fa-play-circle')
+                lis[i].children[1].classList.add('fa-pause-circle')
+              } else if (lis[i].children[1].classList.contains('fa-pause-circle')) {
+                lis[i].children[1].classList.remove('fa-pause-circle')
+                lis[i].children[1].classList.add('fa-play-circle')
+              }
+            })
+          } else {
+            lis[i].children[1].classList.contains('fa-pause-circle') ??
+              lis[i].children[1].classList.remove('fa-pause-circle')
+            lis[i].children[1].classList.add('fa-play-circle')
+          }
+        }
+        for (let i = 0; i < lis.length; i++) {
+          if (lis[i].classList.contains('active') && lis[i].children[1].classList.contains('fa-pause-circle')) {
+            currentIndex = i;
+            await setInnerHTML()
+            if (audioPlay.paused) {
+              tPlay()
+              player.classList.add('turn')
+              contentBackground.classList.add('moveTop')
+            } 
+          }else if(lis[i].classList.contains('active')&&lis[i].children[1].classList.contains('fa-play-circle')){
+            if(audioPlay.play) {
+              tPause()
+              player.classList.remove('turn')
+              contentBackground.classList.remove('moveTop')
+            }
+          }
+        }
+      }
+    })
+    const formatTime = function (time) {
+      let h = parseInt(time / 60)
+      let s = parseInt(time % 60)
+      h = h < 10 ? '0' + h : h
+      s = s < 10 ? '0' + s : s
+      return `${h}:${s}`
+    }
+    let f = null
+    let logging = false
+    const updateProcess = (e) => {
+      percent = Math.ceil((e.pageX - (f.getBoundingClientRect().left + window.scrollX)) / f.offsetWidth * 100)
+      fProcess.style.width = percent + '%'
+      // console.log(audioPlay.duration)
+      audioPlay.currentTime = audioPlay.duration * percent / 100
+    }
+    audioPlay.addEventListener('loadedmetadata', function (e) {
+      e.preventDefault()
+      data[currentIndex].time = formatTime(audioPlay.duration)
+      f.addEventListener('mousedown', e => {
+        e.preventDefault()
+        logging = true
+        updateProcess(e)
+      })
+      f.addEventListener('mousemove', e => {
+        e.preventDefault()
+        // console.log(logging)
+        if (logging) {
+          updateProcess(e)
+        }
+      })
+      f.addEventListener('mouseup', e => {
+        e.preventDefault()
+        logging = false
+      })
+      f.addEventListener('mouseleave', e => {
+        e.preventDefault()
+        logging = false
+      })
+      f.addEventListener('click', e => {
+        percent = Math.ceil((e.pageX - (f.getBoundingClientRect().left + window.scrollX)) / f.offsetWidth * 100)
+        fProcess.style.width = percent + '%'
+        // console.log(audioPlay.duration)
+        audioPlay.currentTime = audioPlay.duration * percent / 100
+      })
+      document.addEventListener('keydown', (e) => {
+        e.preventDefault()
+        switch (e.key) {
+          case 'ArrowRight':
+            percent = percent + 0.8
+            // console.log(percent)
+            if (percent >= 100) {
+              percent = 0
+            }
+            fProcess.style.width = percent + '%'
+            audioPlay.currentTime = audioPlay.duration * percent / 100
+            break
+          case 'ArrowLeft':
+            percent = percent - 0.8
+            // console.log(percent)
+            if (percent <= 0) {
+              percent = 0
+            }
+            fProcess.style.width = percent + '%'
+            audioPlay.currentTime = audioPlay.duration * percent / 100
+            break
+          default: break
+        }
+      })
+    })
+    let percent = 0
+    let isMove = true
+
+    audioPlay.addEventListener('timeupdate', function (e) {
+
+      e.preventDefault()
+      percent = audioPlay.currentTime / audioPlay.duration
+      percent = Math.ceil(percent * 100)
+      fProcess.style.width = percent + '%'
+      fLeft.innerHTML = formatTime(audioPlay.currentTime)
+      if (audioPlay.ended === true) {
+          let lis= contentUl.children
+          lis[currentIndex].children[1].classList.remove('fa-pause-circle')
+          lis[currentIndex].children[1].classList.add('fa-play-circle')
+          lis[currentIndex].classList.remove('active')
+        currentIndex = currentIndex + 1
+        if (currentIndex > data.length - 1) {
+          currentIndex = 0
+        }
+        setInnerHTML()
+        if (audioPlay.pause) {
+          tPlay()
+           let lis= contentUl.children
+           lis[currentIndex].children[1].classList.remove('fa-play-circle')
+           lis[currentIndex].children[1].classList.add('fa-pause-circle')
+           lis[currentIndex].classList.add('active')
+           player.classList.add('turn')
+           contentBackground.classList.add('moveTop')
+
+        } else {
+           tPause()
+           let lis= contentUl.children
+          lis[currentIndex].children[1].classList.remove('fa-play-circle')
+          lis[currentIndex].children[1].classList.add('fa-pause-circle')
+          lis[currentIndex].classList.remove('active')
+          player.classList.remove('turn')
+          contentBackground.classList.remove('moveTop')
+
+        }
+      }
+    })
+  </script>
+</body>
+</html>
